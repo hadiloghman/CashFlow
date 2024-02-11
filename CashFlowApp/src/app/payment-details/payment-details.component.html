@@ -1,0 +1,52 @@
+<div class="bg-body-secondary text-center py-5 rounded-2">
+    <h1 class="display-6 fw-bold">ایجاد سال مالی</h1>
+</div>
+<div class="row mt-5">
+    <div class="col-12">
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-start mb-2 border px-4 py-3 rounded-3"
+                *ngFor="let pd of service.list">
+                <div class="flex-grow-1 mouse-hover" (click)="populateForm(pd)">
+                    <div class="fw-bold">{{pd.accYear}}</div>
+                    <div class="fw-bold">{{pd.startDateJalali}}</div>
+                    <div class="fw-bold">{{pd.endDateJalali}}</div>
+                </div>
+                <span class="text-secondary">
+                    <i class="fa-solid fa-square-plus fa-lg mouse-hover" title="ایجاد" data-toggle="modal"
+                        data-target="#modalInsertUpdate"></i>
+                </span>
+                <span class="text-secondary">
+                    <i class="fa-regular fa-pen-to-square fa-lg mouse-hover" title="ویرایش" data-toggle="modal"
+                        data-target="#modalInsertUpdate"></i>
+                </span>
+                <span class="text-secondary">
+                    <i class="fa-solid fa-trash-can fa-lg mouse-hover" title="حذف" (click)="onDelete(pd.id)"></i>
+                </span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="modal fade" id="modalInsertUpdate" role="dialog" aria-labelledby="modalInsertUpdateLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title text-end" id="modalInsertUpdateLabel">سال مالی</h5>
+            </div>
+            <div class="modal-body">
+                <div class="col-12"><app-payment-detail-form /></div>
+            </div>
+            <div class="modal-footer leftAlign" style="text-align: left;">
+                <div class="btn-group btn-group-lg" role="group" style="text-align: left;">
+                    <button class="btn btn-danger" type="button" data-dismiss="modal">بستن</button>
+                    <button class="btn btn-success" type="submit">ذخیره</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

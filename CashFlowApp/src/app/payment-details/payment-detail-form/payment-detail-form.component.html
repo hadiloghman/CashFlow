@@ -1,0 +1,42 @@
+<form #form="ngForm" (submit)="onSubmit(form)" [class.submitted]="service.formSubmitted" novalidate autocomplete="off">
+    <input type="hidden" name="id" [value]="service.formData.id">
+    <div class="form-group">
+        <div class="mt-2 mb-2 row no-gutters">
+            <span class="no-padding col-sm-3 input-group-text mt-10 mb-10">سال مالی</span>
+            <div class="col-sm-9">
+                <div class="input-group">
+                    <input class="form-control" placeholder="سال مالی" #accountingYear="ngModel" name="accountingYear"
+                        [(ngModel)]="service.formData.accYear" required minlength="4" maxlength="4">
+                </div>
+            </div>
+        </div>
+        <div class="mt-2 mb-2 row no-gutters">
+            <span class="no-padding col-sm-3 input-group-text">تاریخ شروع</span>
+            <div class="col-sm-9">
+                <div class="input-group">
+                    <input type="text" id="input-startDateJalali" class="form-control" placeholder="تاریخ شروع"
+                        aria-label="startDateJalali" aria-describedby="startDateJalali" #startDateJalali="ngModel"
+                        [(ngModel)]="service.formData.startDateJalali" name="startDateJalali">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text cursor-pointer persianDate" id="startDateJalali"><i
+                                class="fa-regular fa-calendar-days"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-2 mb-2 row no-gutters">
+            <span class="no-padding col-sm-3 input-group-text">تاریخ پایان</span>
+            <div class="col-sm-9">
+                <div class="input-group">
+                    <input type="text" id="input-endDateJalali" class="form-control" placeholder="تاریخ پایان"
+                        aria-label="endDateJalali" aria-describedby="endDateJalali" #endDateJalali="ngModel"
+                        [(ngModel)]="service.formData.endDateJalali" name="endDateJalali">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text cursor-pointer persianDate" id="endDateJalali"><i
+                                class="fa-regular fa-calendar-days"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

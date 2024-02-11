@@ -1,0 +1,1 @@
+export * from './accountingYear2.component';
