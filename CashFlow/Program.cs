@@ -4,6 +4,17 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
 using System.Numerics;
+using Microsoft.Extensions.Logging.Configuration;
+using NLog.Web;
+using System.Reflection.Metadata;
+using NLog;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
+using Newtonsoft.Json.Linq;
+using NLog.Layouts;
+using NLog.Targets;
+using NLog.Fluent;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +24,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+builder.Host.UseNLog();
 
 var dbContext = builder.Services.AddDbContext<CashFlowContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("cnn")));
 

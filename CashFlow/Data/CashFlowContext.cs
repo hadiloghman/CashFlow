@@ -7,6 +7,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Components;
 using CashFlow.Models.APIParameters;
+using Serilog;
 
 namespace CashFlow.Data;
 
@@ -19,7 +20,7 @@ public partial class CashFlowContext : DbContext
     public CashFlowContext(DbContextOptions<CashFlowContext> options)
         : base(options)
     {
-
+    
     }
 
     public virtual DbSet<AccountingYear> AccountingYears { get; set; }
@@ -74,6 +75,7 @@ public partial class CashFlowContext : DbContext
         }
         catch (Exception ex)
         {
+            Log.Error(ex, ex.Message);
             return null;
         }
     }
