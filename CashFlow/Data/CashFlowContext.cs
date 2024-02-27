@@ -6,7 +6,6 @@ using CashFlow.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Components;
-using CashFlow.Models.APIParameters;
 using Serilog;
 
 namespace CashFlow.Data;
@@ -20,7 +19,7 @@ public partial class CashFlowContext : DbContext
     public CashFlowContext(DbContextOptions<CashFlowContext> options)
         : base(options)
     {
-    
+
     }
 
     public virtual DbSet<AccountingYear> AccountingYears { get; set; }
@@ -42,15 +41,16 @@ public partial class CashFlowContext : DbContext
         try
         {
             var parameters = new[] {
+
             new SqlParameter("@sortColumn", SqlDbType.VarChar) { Direction = ParameterDirection.Input, Value = sortColumn },
             new SqlParameter("@sortDirection", SqlDbType.Int) { Direction = ParameterDirection.Input, Value = sortDirection },
             new SqlParameter("@pageSize", SqlDbType.Int) { Direction = ParameterDirection.Input, Value = pageSize },
-            new SqlParameter("@pageNumber", SqlDbType.Int) { Direction = ParameterDirection.Input, Value = pageNumber },
+            new SqlParameter("@pageNumber", SqlDbType.Int) {  Value = pageNumber },
 
         };
 
             var results = this.Set<AccountingYear>()
-                 .FromSqlRaw("EXEC sp_AccountingYearGet @sortColumn, @sortDirection, @pageSize, @pageNumber", parameters)
+                 .FromSqlRaw("EXEC sp_AccountingYearGet @sortColumn, @sortDirection, @pageSize, @pageNumber", parameters.ToList())
                  .ToList();
 
             return results;
@@ -61,14 +61,15 @@ public partial class CashFlowContext : DbContext
         }
     }
 
-    public List<AccountingYear> AccountYearGet(PaginationParameters parameters)
+    public List<AccountingYearResult> AccountYearGet(int? Id, AccountingYearFiltering parameters)
     {
         try
         {
             var sqlParameters = parameters.GetSqlParameters();
-
-            var results = this.Set<AccountingYear>()
-                 .FromSqlRaw("EXEC sp_AccountingYearGet @sortColumn, @sortDirection, @pageSize, @pageNumber", sqlParameters)
+            sqlParameters.Insert(0, new SqlParameter("@Id", Id ?? Convert.DBNull));
+            var results = this.Set<AccountingYearResult>()
+                 .FromSqlRaw("EXEC sp_AccountingYearGet @Id, @sortColumn, @sortDirection, @pageSize, @pageNumber"
+                 , sqlParameters.ToArray())
                  .ToList();
 
             return results;
@@ -84,11 +85,6 @@ public partial class CashFlowContext : DbContext
         modelBuilder.Entity<AccountingYear>(entity =>
         {
             entity.ToTable("AccountingYear");
-
-            entity.Property(e => e.EndDate).HasColumnType("datetime");
-            entity.Property(e => e.StartDate).HasColumnType("datetime");
-            entity.Property(e => e.TotalCount).HasColumnType("bigint");
-            entity.Property(e => e.RowNumber).HasColumnType("bigint");
 
         });
 

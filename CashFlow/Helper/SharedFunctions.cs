@@ -4,7 +4,7 @@ namespace CashFlow.Helper
 {
     public class SharedFunctions
     {
-        public static string getCurrentDateJalali()
+        public static string getDateCurrentJalali()
         {
             System.Globalization.PersianCalendar pc = new System.Globalization.PersianCalendar();
             string str;
@@ -28,12 +28,12 @@ namespace CashFlow.Helper
             return DateTime.Now.Hour.ToString() + ":" + DateTime.Now.Minute.ToString() + ":" + DateTime.Now.Second.ToString();
         }
 
-        public static string getCurrentDateString()
+        public static string getDateCurrentString()
         {
             return DateTime.Now.Year.ToString() + "/" + DateTime.Now.Month.ToString() + "/" + DateTime.Now.Day.ToString();
         }
 
-        public static DateTime? getGregorianDate(string? jalaliDate)
+        public static DateTime? getDateGregorian(string? jalaliDate)
         {
             if (string.IsNullOrEmpty(jalaliDate)) return null;
 

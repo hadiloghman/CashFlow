@@ -13,8 +13,9 @@ using Newtonsoft.Json.Linq;
 using NLog.Layouts;
 using NLog.Targets;
 using NLog.Fluent;
-
-
+using AutoMapper;
+using CashFlow;
+using CashFlow.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new MappingProfile()));
+var mapper = configuration.CreateMapper();
+builder.Services.AddSingleton(mapper);
+
 
 var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 builder.Host.UseNLog();

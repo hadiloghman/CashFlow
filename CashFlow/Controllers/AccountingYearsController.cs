@@ -9,8 +9,9 @@ using CashFlow.Data;
 using CashFlow.Models;
 using Microsoft.CodeAnalysis.Elfie.Model;
 using System.Drawing.Printing;
-using CashFlow.Models.APIParameters;
 using Microsoft.Data.SqlClient;
+using AutoMapper;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace CashFlow.Controllers
 {
@@ -20,116 +21,83 @@ namespace CashFlow.Controllers
     {
         private readonly CashFlowContext _context;
         private readonly ILogger<AccountingYearsController> _logger;
-        public AccountingYearsController(CashFlowContext context,ILogger<AccountingYearsController> logger)
+        private readonly IMapper _mapper;
+        public AccountingYearsController(CashFlowContext context
+            , ILogger<AccountingYearsController> logger
+            , IMapper mapper)
         {
             _context = context;
             _logger = logger;
+            _mapper = mapper;
         }
-
-
 
         // GET: api/AccountingYears
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AccountingYear>>> GetCFAccountingYears([FromQuery] AccountingYearGetParameters requestParameter)
+        public async Task<ActionResult<IEnumerable<AccountingYearDTO>>> GetAccountingYearsList([FromQuery] AccountingYearFiltering requestParameter)
         {
-            var data = _context.AccountYearGet(requestParameter);
-            return data;
+            var lstData = _context.AccountYearGet(null, requestParameter);
+            var lstDataDTO = _mapper.Map<IEnumerable<AccountingYearDTO>>(lstData);
+            return Ok(lstDataDTO);
         }
 
 
         // GET: api/AccountingYears/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<AccountingYear>> GetCFAccountingYear(int id)
+        public async Task<ActionResult<AccountingYearDTO>> GetAccountingYear(int id)
         {
-            if (_context.AccountingYears == null)
-            {
+            var lstData = _context.AccountYearGet(id, new AccountingYearFiltering());
+            if (lstData.Count == 0)
                 return NotFound();
-            }
-            var cFAccountingYear = await _context.AccountingYears.FindAsync(id);
+            var dataDTO = _mapper.Map<AccountingYearDTO>(lstData[0]);
 
-            if (cFAccountingYear == null)
-            {
-                return NotFound();
-            }
-
-            return cFAccountingYear;
+            return Ok(dataDTO);
         }
 
 
         // PUT: api/AccountingYears/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCFAccountingYear(int id, AccountingYear cFAccountingYear)
+        [HttpPut]
+        public async Task<IActionResult> PutAccountingYear(AccountingYearDTO AccountingYearDTO)
         {
-            if (id != cFAccountingYear.Id)
-            {
-                return BadRequest();
-            }
+            var accountingYear = _mapper.Map<AccountingYear>(AccountingYearDTO);
+            var id = accountingYear.Id;
+            _context.Entry(accountingYear).State = EntityState.Modified;
 
-            _context.Entry(cFAccountingYear).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CFAccountingYearExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            //return NoContent();
-            return Ok(await _context.AccountingYears.OrderBy(o => o.AccYear).ToListAsync());
+            return Ok(AccountingYearDTO);
         }
 
         // POST: api/AccountingYears
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<AccountingYear>> PostCFAccountingYear(AccountingYear cFAccountingYear)
+        public async Task<ActionResult<AccountingYear>> PostAccountingYear(AccountingYearDTO AccountingYearDTO)
         {
-            if (_context.AccountingYears == null)
-            {
-                return Problem("Entity set 'CashFlowContext.CFAccountingYears'  is null.");
-            }
-            _context.AccountingYears.Add(cFAccountingYear);
+            var accountingYear = _mapper.Map<AccountingYear>(AccountingYearDTO);
+
+            _context.AccountingYears.Add(accountingYear);
             await _context.SaveChangesAsync();
 
-            //return CreatedAtAction("GetCFAccountingYear", new { id = cFAccountingYear.Id }, cFAccountingYear);
-            return Ok(await _context.AccountingYears.OrderBy(o => o.AccYear).ToListAsync());
+            AccountingYearDTO.Id = accountingYear.Id;
+            return Ok(AccountingYearDTO);
         }
 
         // DELETE: api/AccountingYears/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCFAccountingYear(int id)
+        public async Task<IActionResult> DeleteAccountingYear(int id)
         {
-            if (_context.AccountingYears == null)
-            {
-                return NotFound();
-            }
-            var cFAccountingYear = await _context.AccountingYears.FindAsync(id);
-            if (cFAccountingYear == null)
+
+            var accountingYear = await _context.AccountingYears.FindAsync(id);
+            if (accountingYear == null)
             {
                 return NotFound();
             }
 
-            _context.AccountingYears.Remove(cFAccountingYear);
+            _context.AccountingYears.Remove(accountingYear);
             await _context.SaveChangesAsync();
 
-            //return NoContent();
-            return Ok(await _context.AccountingYears.OrderBy(o => o.AccYear).ToListAsync());
+            return Ok();
         }
-
-        private bool CFAccountingYearExists(int id)
-        {
-            return (_context.AccountingYears?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-
 
     }
 }
